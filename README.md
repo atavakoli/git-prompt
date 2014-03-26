@@ -50,14 +50,14 @@ and that you do have changes in your working directory that are uncommited.
 ``[3 -> foo]``
 
 This means that you are currently on the foo branch, it is 3 ahead of its
-origin (i.e. you can push it) that there are no changes in the working
+origin (i.e. you can push it), and that there are no changes in the working
 directory.
 
 ``[bar* -> 2]``
 
 This means that you are currently on the bar branch, it is 2 behind of its
-origin (i.e. you can fast-forward it) that there are indeed changes in the
-working directory.
+origin (i.e. you can fast-forward it), and that there are indeed changes in
+the working directory.
 
 ``[3 -> foobar* -> 2]``
 
