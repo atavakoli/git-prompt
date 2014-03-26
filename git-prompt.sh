@@ -1,4 +1,6 @@
-# Copy this into your ~/.bashrc
+#!/bin/bash
+
+# Source this file into your ~/.bashrc
 
 
 # USAGE
