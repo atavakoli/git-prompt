@@ -3,14 +3,19 @@
 Bash prompt for Git
 
 The main file in this project is the ``git-prompt.sh`` file, which is a
-bash script that makes available a function called ``git_prompt``, which can
-be used in the ``PS1`` environment variable to include Git information in
-your bash prompt (or you can just call it whenever you like).
+bash script that defines a function called ``git_prompt``, which outputs
+a small string showing the status of your Git repository, including the
+current branch/head, ahead/behind status, and working directory status.
+
+It's used by default to generate a custom bash prompt whenever you're in
+a Git-managed directory.
 
 ## Installation
 
-1. Copy into your home folder
-2. Add ``. ~/git-prompt.sh`` to your ``~/.bashrc`` file
+1. Copy ``git-prompt.sh`` into your home directory
+2. Add ``source ~/git-prompt.sh`` to your ``~/.bashrc`` file (or your
+   ``~/.bash_aliases`` file, as your prefer)
+3. Run ``source ~/.bashrc``
 
 ## Design
 
@@ -20,9 +25,13 @@ It will also show (via asterisk after the branch name) whether the working
 directory is dirty or not. Finally, if you are on a detached HEAD, it will
 attempt to show the tag, or the SHA-1 if the HEAD is not tagged.
 
-``git_prompt`` will return an empty string if you are not in a git-managed
+``git_prompt`` will return an empty string if you are not in a Git-managed
 directory (i.e. if the 'git status' command would fail).
 
+This function is used by default in the ``PROMPT_COMMAND`` environment
+variable, which in turn sets the ``PS1`` environment variable to a value
+containing withthe output of ``git_prompt``.  You can edit the version
+that comes in ``git-prompt.sh`` to match your preferred prompt format.
 
 ## Examples
 
