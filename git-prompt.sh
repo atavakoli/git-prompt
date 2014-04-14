@@ -9,9 +9,10 @@
 #
 # The git_prompt function will return a string showing the current branch name
 # as well as how ahead/behind it is from its origin (since the last fetch).
-# It will also show (via asterisk after the branch name) whether the working
-# directory is dirty or not. Finally, if you are on a detached HEAD, it will
-# attempt to show the tag, or the SHA-1 if the HEAD is not tagged.
+# It will also show (via * before the branch name) whether the working
+# directory is modified, and (via * after branch name) whether the index
+# is modified. Finally, if you are on a detached HEAD, it will attempt to
+# to show the tag, or the SHA-1 if the HEAD is not tagged.
 #
 # git_prompt will return an empty string if you are not in a git-managed
 # directory (i.e. if the 'git status' command would fail).
@@ -24,31 +25,41 @@
 #
 #    This means that you are currently on the master branch in this git-managed
 #    directory, that you are neither ahead nor behind from master's origin,
-#    and that you have no changes in your working directory.
+#    and that you have no changes in neither your working directory nor index.
+#
+#   [*master]
+#
+#    This means that you are currently on the master branch in this git-managed
+#    directory, that you are neither ahead nor behind from master's origin,
+#    and that you do have changes in your working directory that are unstaged.
 #
 #   [master*]
 #
 #    This means that you are currently on the master branch in this git-managed
 #    directory, that you are neither ahead nor behind from master's origin,
-#    and that you do have changes in your working directory that are uncommited.
+#    and that you do have changes in your index that are uncommited.
+#
+#   [*master*]
+#
+#    This means that you are currently on the master branch in this git-managed
+#    directory, that you are neither ahead nor behind from master's origin,
+#    and that you do have changes in both unstaged changes in your working
+#    directory and uncommitted changes in your index.
 #
 #   [3 -> foo]
 #
 #    This means that you are currently on the foo branch, it is 3 ahead of its
-#    origin (i.e. you can push it) that there are no changes in the working
-#    directory.
+#    origin (i.e. you can push it).
 #
-#   [bar* -> 2]
+#   [bar -> 2]
 #
 #    This means that you are currently on the bar branch, it is 2 behind of its
-#    origin (i.e. you can fast-forward it) that there are indeed changes in the
-#    working directory.
+#    origin (i.e. you can fast-forward it).
 #
-#   [3 -> foobar* -> 2]
+#   [3 -> foobar -> 2]
 #
 #    This means that the foobar branch is 3 commits ahead and 2 commits behind
-#    of its origin (i.e. its diverged), and that there are changes in the
-#    working directory.
+#    of its origin (i.e. it's diverged).
 #
 #   [detached(1.1.3)]
 #
@@ -71,13 +82,17 @@ function git_prompt_format() {
     echo -n "${2} -> "
   fi
 
+  if [ "$4" != 0 ]; then
+    echo -n "*"
+  fi
+
   if [ "$1" == "DETACHEDHEAD" ]; then
     echo -n "detached ($(git describe --always --tags HEAD 2> /dev/null))"
   else
     echo -n $1
   fi
 
-  if [ "$4" != 1 ]; then
+  if [ "$5" != 0 ]; then
     echo -n "*"
   fi
 
@@ -90,20 +105,38 @@ function git_prompt_format() {
 
 function git_prompt() {
   export GIT_PROMPT_PARAM="$(git status -b --porcelain 2> /dev/null | gawk '
-    match($0, /^## HEAD \(no branch\)$/, groups) {
+    BEGIN {
+      workingTreeCount = 0;
+      indexCount = 0;
+    }
+
+    /^## HEAD \(no branch\)$/ {
       printf "DETACHEDHEAD 0 0 ";
     }
 
-    match($0, /^## ([^ ]+)$/, groups) {
+    match($0, /^## ([^ .]+)$/, groups) {
       printf "%s 0 0 ", groups[1];
     }
 
-    match($0, /^## ([^ ]+)\.\.\.[^ ]*( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?\])?$/, groups) {
-      printf "%s %d  %d ", groups[1], (groups[4]"" == "" ? "0" : groups[4]), (groups[7]"" == "" ? "0" : groups[7]);
+    match($0, /^## ([^ .]+)\.\.\.[^ ]*( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?\])?$/, groups) {
+      printf "%s %d %d ", groups[1], (groups[4]"" == "" ? "0" : groups[4]), (groups[7]"" == "" ? "0" : groups[7]);
+    }
+
+    /^ [A-Z].*$/ {
+      workingTreeCount +=1;
+    }
+
+    /^[A-Z] .*$/ {
+      indexCount +=1;
+    }
+
+    /^[A-Z]{2}.*$/ {
+      indexCount +=1;
+      workingTreeCount +=1;
     }
 
     END {
-      print NR;
+      print workingTreeCount, indexCount;
     }
   ')"
 
