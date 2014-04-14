@@ -17,6 +17,12 @@ a Git-managed directory.
    ``~/.bash_aliases`` file, as your prefer)
 3. Run ``source ~/.bashrc``
 
+## Dependencies
+
+- ``gawk``
+
+  To parse the output of ``git status --porcelain`` to build the prompt.
+
 ## Design
 
 The ``git_prompt`` function will return a string showing the current branch
