@@ -31,8 +31,8 @@ directory (i.e. if the 'git status' command would fail).
 
 This function is used by default in the ``PROMPT_COMMAND`` environment
 variable, which in turn sets the ``PS1`` environment variable to a value
-containing withthe output of ``git_prompt``.  You can edit the version
-that comes in ``git-prompt.sh`` to match your preferred prompt format.
+containing the output of ``git_prompt``.  You can edit the version that
+comes in ``git-prompt.sh`` to match your preferred prompt format.
 
 ## Examples
 
