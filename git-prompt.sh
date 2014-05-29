@@ -113,7 +113,7 @@ function git_prompt() {
     /^## .*$/ {
       if (0 != match($0, /^## HEAD \(no branch\)$/)) {
         printf "DETACHEDHEAD 0 0 ";
-      } else if (0 != match($0, /^## ([^ ]+)\.\.\.[^ ]*( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?\])?$/, groups)) {
+      } else if (0 != match($0, /^## ([^ ]+)\.\.\.[^ ]*( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?(gone)?\])?$/, groups)) {
         printf "%s %d %d ", groups[1], (groups[4]"" == "" ? "0" : groups[4]), (groups[7]"" == "" ? "0" : groups[7]);
       } else if (0 != match($0, /^## ([^ ]+)$/, groups)) {
         printf "%s 0 0 ", groups[1];
