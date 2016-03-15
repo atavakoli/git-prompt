@@ -82,6 +82,11 @@ origin (i.e. you can fast-forward it).
 This means that the foobar branch is 3 commits ahead and 2 commits behind
 of its origin (i.e. it's diverged).
 
+``[? -> foobar -> ?]``
+
+This means that foobar branch has an upstream that is gone, requiring a
+`git branch --unset-upstream` to repair.
+
 ``[detached(1.1.3)]``
 
 This means that you are currently in detached HEAD mode, and HEAD points

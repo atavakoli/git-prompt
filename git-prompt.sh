@@ -61,6 +61,11 @@
 #    This means that the foobar branch is 3 commits ahead and 2 commits behind
 #    of its origin (i.e. it's diverged).
 #
+#   [? -> foobar -> ?]
+#
+#    This means that foobar branch has an upstream that is gone, requiring a
+#    'git branch --unset-upstream' to repair.
+#
 #   [detached(1.1.3)]
 #
 #    This means that you are currently in detached HEAD mode, and HEAD points
@@ -113,7 +118,9 @@ function git_prompt() {
     /^## .*$/ {
       if (0 != match($0, /^## HEAD \(no branch\)$/)) {
         printf "DETACHEDHEAD 0 0 ";
-      } else if (0 != match($0, /^## ([^ ]+)\.\.\.[^ ]*( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?(gone)?\])?$/, groups)) {
+      } else if (0 != match($0, /^## ([^ ]+)\.\.\.[^ ]* \[gone\]$/, groups)) {
+        printf "%s ? ? ", groups[1];
+      } else if (0 != match($0, /^## ([^ ]+)\.\.\.[^ ]*( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?\])?$/, groups)) {
         printf "%s %d %d ", groups[1], (groups[4]"" == "" ? "0" : groups[4]), (groups[7]"" == "" ? "0" : groups[7]);
       } else if (0 != match($0, /^## ([^ ]+)$/, groups)) {
         printf "%s 0 0 ", groups[1];
