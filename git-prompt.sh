@@ -5,7 +5,7 @@
 
 # USAGE
 #
-#   export PROMPT_COMMAND='export PS1="<your existing prompt>$(git_prompt)"'
+#   export PROMPT_COMMAND='export PS1="<your existing prompt> $(git_prompt) "'
 #
 # The git_prompt function will return a string showing the current branch name
 # as well as how ahead/behind it is from its origin (since the last fetch).
@@ -175,7 +175,7 @@ function git_prompt() {
     branch="[$branch]"
   fi
 
-  echo -n " $c_bold$color$branch$c_clear "
+  echo -n "$c_bold$color$branch$c_clear"
 }
 
 # MODIFY THE BELOW TO ADD $(git_prompt) WHEREVER YOU WANT IN YOUR PS1
@@ -183,4 +183,4 @@ function git_prompt() {
 #
 # FOR EXAMPLE:
 #
-# export PROMPT_COMMAND="$PROMPT_COMMAND;"'export PS1="\h:\W \u$(git_prompt)\$"'
+# export PROMPT_COMMAND="$PROMPT_COMMAND;"'export PS1="\h:\W \u $(git_prompt) \$"'

@@ -17,7 +17,7 @@ For example:
 
 ```
 source /path/to/git-prompt/git-prompt.sh
-export PROMPT_COMMAND="$PROMPT_COMMAND;"'export PS1="\h:\W \u$(git_prompt)\$"'
+export PROMPT_COMMAND="$PROMPT_COMMAND;"'export PS1="\h:\W \u $(git_prompt) \$"'
 ```
 
 ## Design
