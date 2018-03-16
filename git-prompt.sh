@@ -148,8 +148,8 @@ function git_prompt() {
     read ahead behind < <(git rev-list --count --left-right @{u}... 2>/dev/null)
   fi
 
-  git diff --no-ext-diff --quiet || unstaged='*'
-  git diff --no-ext-diff --quiet --staged || staged='*'
+  git diff-files --quiet || unstaged='*'
+  git diff-index --quiet --cached HEAD -- || staged='*'
 
   [ -n "$GITPROMPT_SHOW_UNTRACKED" ] \
     && git ls-files --others --directory --no-empty-directory --error-unmatch \
