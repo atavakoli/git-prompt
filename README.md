@@ -111,6 +111,10 @@ parent of master.
 You are currently in detached HEAD mode, and HEAD points to commit
 1aaf71b, which not a descendent of any named head.
 
+`<detached(ROOT)>`
+
+You are currently not on any commit (e.g. right after running git init).
+
 `<rebase(1aaf71b)>`
 
 You are currently rebasing, and HEAD points to commit 1aaf71b.

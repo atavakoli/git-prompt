@@ -97,6 +97,10 @@
 #    You are currently in detached HEAD mode, and HEAD points to commit
 #    1aaf71b, which not a descendent of any named head.
 #
+#   <detached(ROOT)>
+#
+#    You are currently not on any commit (e.g. right after running git init).
+#
 #   <rebase(1aaf71b)>
 #
 #    You are currently rebasing, and HEAD points to commit 1aaf71b.
@@ -131,14 +135,19 @@ function git_prompt() {
   local behind
 
   if [ -z "$branch" ] || [ $branch == HEAD ]; then
+    branchname=$(git describe --all --contains --always HEAD 2>/dev/null)
+
     if [ -d "$gitdir/rebase-merge" ] || [ -d "$gitdir/rebase-apply" ]; then
       label=rebase
+    elif [ -z "$branchname" ]; then
+      label=detached
+      branchname=ROOT
     else
       label=detached
     fi
 
     color="$c_red"
-    branch="$label($(git describe --all --contains --always HEAD))"
+    branch="$label($branchname)"
     noupstream=t
   else
     color="$c_green"
@@ -148,8 +157,11 @@ function git_prompt() {
     read ahead behind < <(git rev-list --count --left-right @{u}... 2>/dev/null)
   fi
 
-  git diff-files --quiet || unstaged='*'
-  git diff-index --quiet --cached HEAD -- || staged='*'
+  # these currently don't work for the ROOT commit
+  if [ "$label" != detached ] || [ "$branchname" != ROOT ]; then
+    git diff-files --quiet || unstaged='*'
+    git diff-index --quiet --cached HEAD -- || staged='*'
+  fi
 
   [ -n "$GITPROMPT_SHOW_UNTRACKED" ] \
     && git ls-files --others --directory --no-empty-directory --error-unmatch \
