@@ -106,6 +106,17 @@
 #    You are currently rebasing, and HEAD points to commit 1aaf71b.
 #
 
+function timeit() {
+  if [ -z "$GITPROMPT_PROFILE" ]; then
+    "${@}"
+    return
+  fi
+
+  printf '%s\n' "${*}" >> /tmp/git-prompt-timing.log
+  { time "${@}"; } 2>> /tmp/git-prompt-timing.log
+  echo >> /tmp/git-prompt-timing.log
+}
+
 function git_prompt() {
   if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     return
@@ -123,8 +134,8 @@ function git_prompt() {
     c_clear='\[\e[0m\]'
   fi
 
-  local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
-  local gitdir="$(git rev-parse --git-path .)"
+  local branch="$(timeit git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+  local gitdir="$(timeit git rev-parse --git-path .)"
   local topleveldir="$(git rev-parse --show-toplevel)"
   local label
   local counts
@@ -136,7 +147,7 @@ function git_prompt() {
   local behind
 
   if [ -z "$branch" ] || [ $branch == HEAD ]; then
-    branchname=$(git describe --all --contains --always HEAD 2>/dev/null)
+    branchname=$(timeit git describe --all --contains --always HEAD 2>/dev/null)
 
     if [ -d "$gitdir/rebase-merge" ] || [ -d "$gitdir/rebase-apply" ]; then
       label=rebase
@@ -155,17 +166,17 @@ function git_prompt() {
     if [ -f "$gitdir/MERGE_HEAD" ]; then
       branch="merge($branch)"
     fi
-    read ahead behind < <(git rev-list --count --left-right @{u}... 2>/dev/null)
+    read ahead behind < <(timeit git rev-list --count --left-right @{u}... 2>/dev/null)
   fi
 
   # these currently don't work for the ROOT commit
   if [ "$label" != detached ] || [ "$branchname" != ROOT ]; then
     git ls-files -md --error-unmatch -- "$topleveldir" &>/dev/null && unstaged='*'
-    git diff-index --quiet --cached HEAD -- || staged='*'
+    timeit git diff-index --quiet --cached HEAD -- || staged='*'
   fi
 
   [ -n "$GITPROMPT_SHOW_UNTRACKED" ] \
-    && git ls-files --others --directory --no-empty-directory --error-unmatch \
+    && timeit git ls-files --others --directory --no-empty-directory --error-unmatch \
                     -- ':/*' >/dev/null 2>&1 \
     && untracked='+'
 
