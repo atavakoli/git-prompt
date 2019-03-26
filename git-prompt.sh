@@ -125,6 +125,7 @@ function git_prompt() {
 
   local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
   local gitdir="$(git rev-parse --git-path .)"
+  local topleveldir="$(git rev-parse --show-toplevel)"
   local label
   local counts
   local unstaged
@@ -159,7 +160,7 @@ function git_prompt() {
 
   # these currently don't work for the ROOT commit
   if [ "$label" != detached ] || [ "$branchname" != ROOT ]; then
-    git diff-files --quiet || unstaged='*'
+    git ls-files -md --error-unmatch -- "$topleveldir" &>/dev/null && unstaged='*'
     git diff-index --quiet --cached HEAD -- || staged='*'
   fi
 
