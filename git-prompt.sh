@@ -173,7 +173,7 @@ function git_prompt() {
 
   # these currently don't work for the ROOT commit
   if [ "$label" != detached ] || [ "$branchname" != ROOT ]; then
-    timeit git ls-files -md --error-unmatch -- "$topleveldir" &>/dev/null && unstaged='*'
+    timeit git diff --name-only --exit-code &>/dev/null || unstaged='*'
     timeit git diff-index --quiet --cached HEAD -- || staged='*'
   fi
 
