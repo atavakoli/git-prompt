@@ -114,7 +114,9 @@ function timeit() {
 
   printf '%s\n' "${*}" >> /tmp/git-prompt-timing.log
   { time "${@}"; } 2>> /tmp/git-prompt-timing.log
+  local RESULT=$?
   echo >> /tmp/git-prompt-timing.log
+  return $RESULT
 }
 
 function git_prompt() {
@@ -136,7 +138,7 @@ function git_prompt() {
 
   local branch="$(timeit git rev-parse --abbrev-ref HEAD 2>/dev/null)"
   local gitdir="$(timeit git rev-parse --git-path .)"
-  local topleveldir="$(git rev-parse --show-toplevel)"
+  local topleveldir="$(timeit git rev-parse --show-toplevel)"
   local label
   local counts
   local unstaged
@@ -171,7 +173,7 @@ function git_prompt() {
 
   # these currently don't work for the ROOT commit
   if [ "$label" != detached ] || [ "$branchname" != ROOT ]; then
-    git ls-files -md --error-unmatch -- "$topleveldir" &>/dev/null && unstaged='*'
+    timeit git ls-files -md --error-unmatch -- "$topleveldir" &>/dev/null && unstaged='*'
     timeit git diff-index --quiet --cached HEAD -- || staged='*'
   fi
 
